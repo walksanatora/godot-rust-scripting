@@ -19,12 +19,12 @@ impl IScriptLanguageExtension for MathLang {
     fn get_name(&self) -> GString {
         "MathLang".into()
     }
-
-    fn init_ext(&mut self) {} //mathlang needs no lateinit
-
     fn get_type(&self) -> GString {
-        "MathLang".into() //idk why these are seperate
+        "MathLang".into() //idk why name and type are seperate
     }
+
+    // this is called once the editor loads languages. this can be used for later initializaation
+    fn init_ext(&mut self) {} 
 
     fn get_extension(&self) -> GString {
         "ml".into()
@@ -33,7 +33,7 @@ impl IScriptLanguageExtension for MathLang {
     fn finish(&mut self) {} //this does.. smth?
 
     fn get_reserved_words(&self) -> PackedStringArray {
-        PackedStringArray::new() //nope we are not gonna be in editor. and we dont have any words
+        PackedStringArray::new() //nope we are not gonna be in script editor. and we dont have any words
     }
 
     fn is_control_flow_keyword(&self, keyword: GString) -> bool {
@@ -54,7 +54,7 @@ impl IScriptLanguageExtension for MathLang {
         class_name: GString,
         base_class_name: GString,
     ) -> Option<Gd<Script>> {
-        Some(MathScript::new_gd().upcast())
+        Some(MathScript::new_gd().upcast()) //godot *requires* that we return a template otherwise it hard crashes
     }
 
     fn get_built_in_templates(&self, object: StringName) -> Array<Dictionary> {
@@ -88,11 +88,11 @@ impl IScriptLanguageExtension for MathLang {
     }
 
     fn create_script(&self) -> Option<Gd<Object>> {
-        Some(MathScript::new_gd().upcast())
+        Some(MathScript::new_gd().upcast()) //must ALSO not return a option or AGAIN godot hard-crashes for no reason
     }
 
     fn has_named_classes(&self) -> bool {
-        false //TODO: figure out what this means
+        false //TODO: figure out what this means, wait nvm it aint called by editor
     }
 
     fn supports_builtin_mode(&self) -> bool {
@@ -117,11 +117,11 @@ impl IScriptLanguageExtension for MathLang {
         function_name: GString,
         function_args: PackedStringArray,
     ) -> GString {
-        "".into() //we have no functions you sinner
+        "".into() //we have no functions
     }
 
     fn can_make_function(&self) -> bool {
-        false //
+        false // no
     }
 
     fn open_in_external_editor(
@@ -138,7 +138,7 @@ impl IScriptLanguageExtension for MathLang {
     }
 
     fn preferred_file_name_casing(&self) -> ScriptNameCasing {
-        ScriptNameCasing::AUTO
+        ScriptNameCasing::SNAKE_CASE
     }
 
     fn complete_code(&self, code: GString, path: GString, owner: Option<Gd<Object>>) -> Dictionary {
@@ -152,7 +152,7 @@ impl IScriptLanguageExtension for MathLang {
         path: GString,
         owner: Option<Gd<Object>>,
     ) -> Dictionary {
-        dict! {} //TODO: figure out the format for this
+        dict! {} //TODO: figure out the format for this, and what this even means
     }
 
     fn auto_indent_code(&self, code: GString, from_line: i32, to_line: i32) -> GString {
@@ -172,11 +172,11 @@ impl IScriptLanguageExtension for MathLang {
     }
 
     fn thread_enter(&mut self) {
-        //Useless callback
+        //some sort of threading callback?
     }
 
     fn thread_exit(&mut self) {
-        //Uselesscallback
+        //another sort of threading callback?
     }
 
     fn debug_get_error(&self) -> GString {
@@ -240,7 +240,7 @@ impl IScriptLanguageExtension for MathLang {
     }
 
     fn reload_all_scripts(&mut self) {
-        //TODO: make it keep a internal buffer of Gd<MathScript>s and reload them
+        //TODO: make it keep a internal buffer of Gd<MathScript>s and reload them?
     }
 
     fn reload_tool_script(&mut self, script: Option<Gd<Script>>, soft_reload: bool) {
@@ -263,18 +263,18 @@ impl IScriptLanguageExtension for MathLang {
         array![] //no annotations
     }
 
-    fn profiling_start(&mut self) {} //useless callback
+    fn profiling_start(&mut self) {} //unknown callback
 
-    fn profiling_stop(&mut self) {} //useless callback
+    fn profiling_stop(&mut self) {} //unknown callback
 
-    fn profiling_set_save_native_calls(&mut self, enable: bool) {} //useless callback
+    fn profiling_set_save_native_calls(&mut self, enable: bool) {} //unknown callback
 
     unsafe fn profiling_get_accumulated_data(
         &mut self,
         info_array: *mut godot::classes::native::ScriptLanguageExtensionProfilingInfo,
         info_max: i32,
     ) -> i32 {
-        -1 //idk what they want
+        -1 //idk what this i32 means
     }
 
     unsafe fn profiling_get_frame_data(
@@ -282,16 +282,16 @@ impl IScriptLanguageExtension for MathLang {
         info_array: *mut godot::classes::native::ScriptLanguageExtensionProfilingInfo,
         info_max: i32,
     ) -> i32 {
-        -1 //idk what they want
+        -1 //idk what these i32s mean
     }
 
-    fn frame(&mut self) {} //useless callback (that doesn't appear to be called?)
+    fn frame(&mut self) {} //useless callback (that doesn't appear to be called anywhere in godot?)
 
     fn handles_global_class_type(&self, type_: GString) -> bool {
-        false
+        false //no clue
     }
 
     fn get_global_class_name(&self, path: GString) -> Dictionary {
-        dict! {}
+        dict! {} //no clue
     }
 }

@@ -24,6 +24,7 @@ pub struct MathInstance {
 
 impl MathInstance {
     pub fn new(placeholder: bool, script: Gd<MathScript>) -> Self {
+        // here we make a new instance of myself for godot
         let source = script.get_source_code().to_string();
         let mut funcs = HashMap::new();
         for line in source.lines() {
@@ -54,6 +55,7 @@ impl MathInstance {
     }
 }
 
+// function to convert all the math types to float.
 fn val_to_float(value: &Value<DefaultNumericTypes>) -> f64 {
     match value {
         Value::String(str) => str.len() as f64,
@@ -74,17 +76,17 @@ impl ScriptInstance for MathInstance {
     }
 
     fn set_property(this: godot::obj::script::SiMut<Self>, name: godot::prelude::StringName, value: &godot::prelude::Variant) -> bool {
-        false //you cannot edit mathlang
+        false //you cannot set to
     }
 
     fn get_property(&self, name: StringName) -> Option<godot::prelude::Variant> {
         godot_print!("let MathInstance.{name}");
         let identifier = name.to_string();
         let val = {
-            if let Some(cached) = self.cache.get(&identifier) {
+            if let Some(cached) = self.cache.get(&identifier) { //check cache
                 Some(cached)
-            } else if let Some(expr) = self.funcs.get(&identifier) {
-                if let Ok(val) = eval_with_context(expr, self) {
+            } else if let Some(expr) = self.funcs.get(&identifier) { //check valid
+                if let Ok(val) = eval_with_context(expr, self) { // eval
                     self.cache.insert(identifier.to_string(), Box::new(val));
                     self.cache.get(&identifier)
                 } else {None}
@@ -115,6 +117,8 @@ impl ScriptInstance for MathInstance {
         vec![]
     }
 
+    // currently does nothing unless calling the @_reload method to reload the script
+    // but that should only be called by ScriptInstances
     fn call(
         mut this: godot::obj::script::SiMut<Self>,
         method: godot::prelude::StringName,
@@ -173,7 +177,7 @@ impl ScriptInstance for MathInstance {
     }
 
     fn on_refcount_decremented(&self) -> bool {
-        true
+        true // so it wont delete the script instance (it will delete it later if the RC is 0 though)
     }
 
     fn on_refcount_incremented(&self) {}
@@ -190,10 +194,11 @@ impl ScriptInstance for MathInstance {
     }
 }
 
-
+// this is just for my lang so I can pass it's self as the math context
 impl Context for MathInstance {
     type NumericTypes = DefaultNumericTypes;
 
+    //lazily calc values
     fn get_value(&self, identifier: &str) -> Option<&evalexpr::Value<Self::NumericTypes>> {
         if let Some(cached) = self.cache.get(identifier) {
             Some(cached)
@@ -205,10 +210,11 @@ impl Context for MathInstance {
         } else {None}
     }
 
+    //no functions
     fn call_function(
         &self,
         identifier: &str,
-        argument: &evalexpr::Value<Self::NumericTypes>,
+        _argument: &evalexpr::Value<Self::NumericTypes>,
     ) -> evalexpr::error::EvalexprResultValue<Self::NumericTypes> {
         Err(EvalexprError::FunctionIdentifierNotFound(
             identifier.to_string(),

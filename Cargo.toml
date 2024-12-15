@@ -1,0 +1,12 @@
+[package]
+name = "test-proj"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+elsa = "1.10.0"
+evalexpr = "12.0.1"
+godot = { version = "0.2.1", features = ["api-4-3", "experimental-threads"] }

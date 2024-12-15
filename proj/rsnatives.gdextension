@@ -1,0 +1,8 @@
+[configuration]
+entry_symbol = "gdext_rust_init"
+compatibility_minimum = 4.3
+reloadable = false
+
+[libraries]
+linux.debug.x86_64     = "res://../target/debug/libtest_proj.so"
+linux.release.x86_64   = "res://../target/release/libtest_proj.so"
